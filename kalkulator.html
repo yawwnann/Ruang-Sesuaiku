@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Tata Ruang - RuangSesuaiku</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#1e40af', // Blue 800
+                        secondary: '#3b82f6', // Blue 500
+                        surface: '#f8fafc', // Slate 50
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        html { scroll-behavior: smooth; }
+        body { @apply bg-slate-50 text-slate-800; }
+        
+        .form-label { @apply block text-sm font-semibold text-slate-700 mb-1.5; }
+        .form-input, .form-select { 
+            @apply block w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-sm shadow-sm 
+            placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 
+            transition duration-200 disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed; 
+        }
+        
+        .btn { @apply inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed; }
+        .btn-primary { @apply text-white bg-primary hover:bg-blue-800 focus:ring-primary; }
+        .btn-outline { @apply text-primary bg-white border-primary hover:bg-blue-50 focus:ring-primary; }
+        .btn-secondary { @apply text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 focus:ring-slate-400; }
+        
+        .card { @apply bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden; }
+        .card-header { @apply px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between; }
+        .card-body { @apply p-6; }
+
+        .result-box { @apply mt-6 p-5 bg-slate-50 rounded-xl border border-slate-200 text-center; }
+        .result-value { @apply text-3xl font-bold text-slate-900 my-1; }
+        
+        /* Badge Status Styles */
+        .status-badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold mt-2 border; }
+        .status-patuh { @apply bg-green-100 text-green-700 border-green-200; }
+        .status-tidak-patuh { @apply bg-red-100 text-red-700 border-red-200; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative">
+
+    <nav class="bg-white shadow-md sticky top-0 z-40 border-b border-slate-100">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div class="bg-primary text-white p-2 rounded-lg group-hover:bg-blue-700 transition">
+                    <i data-feather="map" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800 leading-none">RuangSesuaiku</h1>
+                    <span class="text-xs text-slate-500 font-medium tracking-wide">DALWAS</span>
+                </div>
+            </a>
+            <div class="hidden md:flex space-x-1">
+                <a href="kepatuhan.html" class="px-4 py-2 text-slate-600 font-medium hover:text-primary hover:bg-blue-50 rounded-lg transition duration-300 flex items-center">
+                    <i data-feather="check-square" class="mr-2 w-4 h-4"></i> Cek Kepatuhan
+                </a>
+                <a href="kalkulator.html" class="px-4 py-2 text-primary font-bold bg-blue-50 rounded-lg transition duration-300 flex items-center">
+                    <i data-feather="percent" class="mr-2 w-4 h-4"></i> Kalkulator Koefisien
+                </a>
+                <button onclick="toggleHistory()" class="ml-2 px-4 py-2 text-white bg-slate-700 hover:bg-slate-800 rounded-lg transition duration-300 flex items-center shadow-sm">
+                    <i data-feather="clock" class="mr-2 w-4 h-4"></i> Riwayat
+                </button>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 text-slate-600 hover:text-primary focus:outline-none">
+                <i data-feather="menu"></i>
+            </button>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-slate-100 absolute w-full shadow-lg">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="kepatuhan.html" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-blue-50">Cek Kepatuhan</a>
+                <a href="kalkulator.html" class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-blue-50">Kalkulator Koefisien</a>
+                <button onclick="toggleHistory()" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-blue-50">
+                    Riwayat Penggunaan
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-primary text-white py-10 relative overflow-hidden">
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h1 class="text-3xl font-bold mb-2">Kalkulator KDB, KDH & KLB</h1>
+            <p class="text-blue-100 max-w-2xl mx-auto">Alat bantu hitung rasio bangunan untuk memastikan perencanaan Anda sesuai dengan RDTR yang berlaku.</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-10 flex-grow">
+        <div class="max-w-6xl mx-auto space-y-10"> 
+
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center font-bold text-sm">1</div>
+                    <h2 class="text-xl font-bold text-slate-800">Tentukan Lokasi & Aturan</h2>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="swp-kalkulator" class="form-label">Sub Wilayah Perencanaan (SWP) <span class="text-red-500">*</span></label>
+                                <select id="swp-kalkulator" name="swp-kalkulator" class="form-select" required>
+                                    <option value="" selected disabled>-- Pilih SWP --</option>
+                                    <option value="A">SWP A (Danurejan)</option>
+                                    <option value="B">SWP B (Gedongtengen)</option>
+                                    <option value="C">SWP C (Gondokusuman)</option>
+                                    <option value="D">SWP D (Gondomanan)</option>
+                                    <option value="E">SWP E (Jetis)</option>
+                                    <option value="F">SWP F (Kotagede)</option>
+                                    <option value="G">SWP G (Kraton)</option>
+                                    <option value="H">SWP H (Mantrijeron)</option>
+                                    <option value="I">SWP I (Mergangsan)</option>
+                                    <option value="J">SWP J (Ngampilan)</option>
+                                    <option value="K">SWP K (Pakualaman)</option>
+                                    <option value="L">SWP L (Tegalrejo)</option>
+                                    <option value="M">SWP M (Umbulharjo)</option>
+                                    <option value="N">SWP N (Wirobrajan)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="zona-kalkulator" class="form-label">Zona Peruntukan <span class="text-red-500">*</span></label>
+                                <select id="zona-kalkulator" name="zona-kalkulator" class="form-select" required disabled>
+                                    <option value="">-- Pilih SWP Dahulu --</option>
+                                </select>
+                            </div>
+                            <div id="subzona-container-kalkulator" style="display: none;">
+                                <label for="subzona-kalkulator" class="form-label">Sub-Zona Spesifik <span class="text-red-500">*</span></label>
+                                <select id="subzona-kalkulator" name="subzona-kalkulator" class="form-select" required>
+                                    <option value="">-- Pilih Sub-Zona --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-slate-100">
+                             <div>
+                                <label for="luasPersil-kalkulator" class="form-label">Kategori Luas Persil <span class="text-red-500">*</span></label>
+                                <select id="luasPersil-kalkulator" name="luasPersil-kalkulator" class="form-select" required>
+                                    <option value="" selected disabled>-- Pilih Kategori --</option>
+                                    <option value="40-100">40 - 100 m²</option>
+                                    <option value="101-200">101 - 200 m²</option>
+                                    <option value="201-400">201 - 400 m²</option>
+                                    <option value="401-1000">401 - 1000 m²</option>
+                                    <option value=">1000">> 1000 m²</option>
+                                </select>
+                            </div>
+                             <div>
+                                <label for="luasPersilInput-kalkulator" class="form-label">Luas Persil Sebenarnya (m²) <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <input type="number" id="luasPersilInput-kalkulator" class="form-input pr-10" placeholder="Contoh: 150" min="0.1" step="any" required>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400 text-sm">m²</div>
+                                </div>
+                            </div>
+                            <div class="flex items-end">
+                                <button id="get-rules-button" class="btn btn-primary w-full h-[42px]">
+                                    <i data-feather="search" class="mr-2 h-4 w-4"></i> Cek & Terapkan Aturan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center font-bold text-sm">2</div>
+                    <h2 class="text-xl font-bold text-slate-800">Hitung Koefisien</h2>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+
+                    <div class="card hover:shadow-md transition duration-300">
+                        <div class="card-header">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                <span class="p-1.5 bg-blue-100 text-primary rounded-md"><i data-feather="home" class="w-4 h-4"></i></span>
+                                Kalkulator KDB
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-5">
+                                <label for="kdb-building" class="form-label">Luas Dasar Bangunan (m²)</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="kdb-building" class="form-input" placeholder="0" min="0" step="any">
+                                    <button type="button" onclick="openLuasModal('kdb-building', 'Rincian Luas Dasar Bangunan')" class="btn btn-secondary px-3" title="Bantu Hitung Detail">
+                                        <i data-feather="grid" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button id="calculate-kdb" class="btn btn-primary w-full" disabled>Hitung KDB</button>
+                            
+                            <div class="result-box">
+                                <p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Hasil Perhitungan</p>
+                                <p class="result-value" id="kdb-result">-</p>
+                                <p class="text-sm text-slate-500" id="kdb-rule">(Batas Aturan: -)</p>
+                                <div id="kdb-status" class="mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card hover:shadow-md transition duration-300">
+                         <div class="card-header">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                <span class="p-1.5 bg-emerald-100 text-emerald-600 rounded-md"><i data-feather="layers" class="w-4 h-4"></i></span>
+                                Kalkulator KLB
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-5">
+                                <label for="klb-floor" class="form-label">Total Luas Lantai (m²)</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="klb-floor" class="form-input" placeholder="0" min="0" step="any">
+                                    <button type="button" onclick="openLuasModal('klb-floor', 'Rincian Total Luas Lantai')" class="btn btn-secondary px-3" title="Bantu Hitung Detail">
+                                        <i data-feather="grid" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button id="calculate-klb" class="btn btn-primary w-full" disabled>Hitung KLB</button>
+                             <div class="result-box">
+                                <p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Hasil Perhitungan</p>
+                                <p class="result-value" id="klb-result">-</p>
+                                <p class="text-sm text-slate-500" id="klb-rule">(Batas Aturan: -)</p>
+                                <div id="klb-status" class="mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card hover:shadow-md transition duration-300">
+                         <div class="card-header">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                <span class="p-1.5 bg-amber-100 text-amber-600 rounded-md"><i data-feather="sun" class="w-4 h-4"></i></span>
+                                Kalkulator KDH
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-5">
+                                <label for="kdh-green" class="form-label">Luas RTH (m²)</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="kdh-green" class="form-input" placeholder="0" min="0" step="any">
+                                    <button type="button" onclick="openLuasModal('kdh-green', 'Rincian Luas RTH')" class="btn btn-secondary px-3" title="Bantu Hitung Detail">
+                                        <i data-feather="grid" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button id="calculate-kdh" class="btn btn-primary w-full" disabled>Hitung KDH</button>
+                            <div class="result-box">
+                                <p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Hasil Perhitungan</p>
+                                <div class="result-value" id="kdh-result">-</div> <p class="text-sm text-slate-500" id="kdh-rule">(Batas Aturan: -)</p>
+                                <div id="kdh-status" class="mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 flex items-start gap-4">
+                <div class="p-2 bg-blue-100 rounded-lg text-primary shrink-0">
+                    <i data-feather="help-circle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 mb-2">Informasi Rumus Perhitungan</h3>
+                    <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside">
+                        <li><strong>KDB (Koefisien Dasar Bangunan):</strong> (Luas Dasar Bangunan / Luas Persil) × 100%.</li>
+                        <li><strong>KLB (Koefisien Lantai Bangunan):</strong> (Total Luas Seluruh Lantai / Luas Persil).</li>
+                        <li><strong>KDH (Koefisien Dasar Hijau):</strong> (Luas Ruang Terbuka Hijau / Luas Persil) × 100%.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-white mt-auto">
+        <div class="container mx-auto px-4 py-8 text-center text-slate-400 text-sm">
+            <p>&copy; 2025 Bidang Pengendalian dan Pengawasan Tata Ruang. Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
+    <div id="luasModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-[60] transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl m-4 flex flex-col max-h-[90vh] overflow-hidden transform scale-100 transition-transform duration-300">
+            <div class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                    <span class="p-1.5 bg-blue-50 text-primary rounded mr-2"><i data-feather="calculator" class="w-4 h-4"></i></span>
+                    <span id="modal-title">Rincian Perhitungan</span>
+                </h3>
+                <button onclick="closeLuasModal()" class="text-slate-400 hover:text-slate-600 focus:outline-none bg-slate-50 p-1 rounded-full"><i data-feather="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-grow bg-slate-50/50">
+                <div id="calc-rows-container" class="space-y-3"></div>
+                <button onclick="addCalcRow()" class="mt-4 w-full py-2 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 font-semibold text-sm hover:border-primary hover:text-primary hover:bg-blue-50 transition flex items-center justify-center">
+                    <i data-feather="plus" class="mr-1 w-4 h-4"></i> Tambah Baris Hitungan
+                </button>
+            </div>
+            
+            <div class="p-5 bg-white border-t border-slate-100 shadow-[0_-5px_15px_rgba(0,0,0,0.02)] z-10">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-slate-500 font-medium">Total Luas Terhitung</span>
+                    <span class="text-2xl font-bold text-primary"><span id="modal-total-result">0</span> <span class="text-base font-normal text-slate-400">m²</span></span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closeLuasModal()" class="btn btn-secondary">Batal</button>
+                    <button onclick="applyLuasResult()" class="btn btn-primary">Gunakan Nilai Ini</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyModal" class="fixed inset-0 z-50 hidden opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="toggleHistory()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col transform transition-transform duration-300 scale-95" id="historyContent">
+                <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                        <i data-feather="clock" class="mr-2 w-5 h-5 text-primary"></i> Riwayat Perhitungan
+                    </h3>
+                    <button onclick="toggleHistory()" class="text-slate-400 hover:text-slate-600">
+                        <i data-feather="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <div class="p-5 overflow-y-auto flex-1 bg-slate-50/30" id="historyList">
+                    <div class="text-center text-slate-500 py-8">Belum ada riwayat.</div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-white rounded-b-2xl flex justify-between">
+                    <button onclick="clearHistory()" class="text-sm text-red-600 hover:text-red-800 font-medium transition">Hapus Semua</button>
+                    <button onclick="toggleHistory()" class="btn btn-secondary px-4 py-2 text-sm">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if(menuButton && mobileMenu) {
+            menuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        const API_GET_ZONA = "http://127.0.0.1:5000/api/get_subzonas";
+        const API_GET_RULES = "http://127.0.0.1:5000/api/get_rules";
+        
+        const ZONA_OPTIONS = {
+             "A": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran" },
+             "B": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran" },
+             "C": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran" },
+             "D": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran" },
+             "E": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran" },
+             "F": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran" },
+             "G": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran", "KT": "Perkantoran", "RTNH": "Ruang Terbuka Non Hijau"},
+             "H": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran", "KT": "Perkantoran", "RTNH": "Ruang Terbuka Non Hijau"},
+             "I": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran", "KT": "Perkantoran", "RTNH": "Ruang Terbuka Non Hijau"},
+             "J": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran", "KT": "Perkantoran", "RTNH": "Ruang Terbuka Non Hijau"},
+             "K": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran", "KT": "Perkantoran", "RTNH": "Ruang Terbuka Non Hijau"},
+             "L": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran", "KT": "Perkantoran", "RTNH": "Ruang Terbuka Non Hijau"},
+             "M": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran", "KT": "Perkantoran", "RTNH": "Ruang Terbuka Non Hijau"},
+             "N": { "PS": "Perlindungan Setempat", "RTH": "Ruang Terbuka Hijau", "CB": "Cagar Budaya", "BJ": "Badan Jalan", "R": "Perumahan", "K": "Perdagangan dan Jasa", "SPU": "Sarana Pelayanan Umum", "HanKam": "Pertahanan dan Keamanan", "Trans": "Transportasi", "C": "Campuran", "KT": "Perkantoran", "RTNH": "Ruang Terbuka Non Hijau"}
+        };
+
+        const swpSelect = document.getElementById('swp-kalkulator');
+        const zonaSelect = document.getElementById('zona-kalkulator');
+        const subZonaContainer = document.getElementById('subzona-container-kalkulator');
+        const subZonaSelect = document.getElementById('subzona-kalkulator');
+        const luasPersilKategoriSelect = document.getElementById('luasPersil-kalkulator');
+        const luasPersilInput = document.getElementById('luasPersilInput-kalkulator');
+        const getRulesButton = document.getElementById('get-rules-button');
+        
+        let ATURAN_AKTIF = null;
+        const HISTORY_KEY = 'calcHistory_v4'; 
+        let modalStore = {}; 
+
+        // --- Fungsi Dropdown & Reset ---
+        function updateZonaOptionsKalkulator() {
+            const swp = swpSelect.value;
+            zonaSelect.innerHTML = '<option value="">-- Pilih Zona --</option>';
+            subZonaContainer.style.display = 'none';
+            subZonaSelect.innerHTML = '<option value="">-- Pilih Sub-Zona --</option>';
+            subZonaSelect.removeAttribute('required');
+            resetRules(); 
+            if (swp && ZONA_OPTIONS[swp]) {
+                for (const [key, value] of Object.entries(ZONA_OPTIONS[swp])) {
+                    let opt = document.createElement('option');
+                    opt.value = key;
+                    opt.textContent = value;
+                    zonaSelect.appendChild(opt);
+                }
+                zonaSelect.disabled = false;
+            } else {
+                zonaSelect.disabled = true;
+            }
+        }
+
+        async function tampilkanSubZonaKalkulator() {
+            const swp = swpSelect.value;
+            const zona = zonaSelect.value;
+            subZonaSelect.innerHTML = '<option value="">-- Memuat... --</option>';
+            subZonaContainer.style.display = 'none';
+            subZonaSelect.removeAttribute('required');
+            resetRules(); 
+            if (!swp || !zona) {
+                subZonaSelect.innerHTML = '<option value="">-- Pilih Zona Dahulu --</option>';
+                return;
+            }
+            try {
+                const response = await fetch(`${API_GET_ZONA}?swp=${swp}&zona=${zona}`);
+                if (!response.ok) throw new Error('Gagal');
+                const subzonaList = await response.json();
+                if (subzonaList && subzonaList.length > 0) {
+                    subZonaSelect.innerHTML = '<option value="">-- Pilih Sub-Zona --</option>';
+                    const filteredList = subzonaList.length > 1 ? subzonaList.filter(sz => !sz.toLowerCase().includes('default')) : subzonaList;
+                    filteredList.forEach(nama => {
+                        let opt = document.createElement('option');
+                        opt.value = nama;
+                        opt.textContent = nama;
+                        subZonaSelect.appendChild(opt);
+                    });
+                    if (filteredList.length > 0){
+                        subZonaContainer.style.display = 'block';
+                        subZonaSelect.setAttribute('required', 'required');
+                    }
+                } else {
+                     subZonaContainer.style.display = 'none';
+                     subZonaSelect.innerHTML = '';
+                }
+            } catch (error) {
+                subZonaSelect.innerHTML = '<option value="">-- Error --</option>';
+            }
+        }
+        
+        function resetRules() {
+            ATURAN_AKTIF = null;
+            ['kdb', 'klb', 'kdh'].forEach(t => {
+                document.getElementById(`${t}-rule`).textContent = '(Batas Aturan: -)';
+                document.getElementById(`calculate-${t}`).disabled = true;
+                resetResult(t);
+            });
+        }
+
+        function resetResult(type) {
+            document.getElementById(`${type}-result`).textContent = '-';
+            const statusEl = document.getElementById(`${type}-status`);
+            statusEl.textContent = '';
+            statusEl.className = '';
+        }
+
+        async function getRulesFromServer() {
+            if (!swpSelect.value || !zonaSelect.value || !luasPersilKategoriSelect.value || !luasPersilInput.value) {
+                alert("Harap lengkapi semua field lokasi & aturan.");
+                return;
+            }
+            getRulesButton.disabled = true;
+            getRulesButton.innerHTML = 'Memuat...';
+            try {
+                const response = await fetch(API_GET_RULES, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        swpPilihan: swpSelect.value,
+                        zonaPilihan: zonaSelect.value,
+                        subZonaPilihan: subZonaSelect.value,
+                        luasPersilPilihan: luasPersilKategoriSelect.value
+                    }),
+                });
+                const rules = await response.json();
+                if (!response.ok) throw new Error(rules.error);
+                
+                ATURAN_AKTIF = rules;
+                document.getElementById('kdb-rule').textContent = `(Batas Maks: ${rules.kdbMaks}%)`;
+                document.getElementById('klb-rule').textContent = `(Batas Maks: ${rules.klbMaks})`;
+                document.getElementById('kdh-rule').textContent = `(Batas Min: ${rules.kdhMin}%)`;
+                
+                ['kdb', 'klb', 'kdh'].forEach(t => document.getElementById(`calculate-${t}`).disabled = false);
+                alert('Aturan berhasil ditemukan! Silakan lakukan perhitungan.');
+            } catch (error) {
+                alert(`Gagal mengambil aturan: ${error.message}`);
+            } finally {
+                getRulesButton.disabled = false;
+                getRulesButton.innerHTML = '<i data-feather="search" class="mr-2 h-4 w-4"></i> Cek & Terapkan Aturan';
+                feather.replace();
+            }
+        }
+
+        // --- FITUR RIWAYAT (MODAL & RESTORE) ---
+
+        function toggleHistory() {
+            const modal = document.getElementById('historyModal');
+            const content = document.getElementById('historyContent');
+            
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    content.classList.remove('scale-95');
+                    content.classList.add('scale-100');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+                renderHistory();
+            } else {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // [LOGIKA BARU: CEGAH DUPLIKAT DI SINI]
+        function saveToHistory(type, inputVal, result, status, details, modalRows) {
+            const landArea = document.getElementById('luasPersilInput-kalkulator').value;
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY));
+            if (!Array.isArray(history)) history = [];
+            
+            // Buat objek data baru
+            const newItem = {
+                type: type.toUpperCase(),
+                timestamp: new Date().toLocaleString('id-ID'),
+                land: landArea,
+                input: inputVal,
+                result: result,
+                status: status,
+                details: details, 
+                modalRows: modalRows 
+            };
+            
+            // Cek apakah data identik sudah ada (kecuali timestamp)
+            const existingIndex = history.findIndex(item => 
+                item.type === newItem.type &&
+                item.land === newItem.land &&
+                item.input === newItem.input &&
+                item.result === newItem.result
+            );
+
+            // Jika ketemu, hapus yang lama (agar nanti newItem masuk paling atas/terbaru)
+            if (existingIndex > -1) {
+                history.splice(existingIndex, 1);
+            }
+            
+            history.unshift(newItem); // Tambah di awal (terbaru)
+            if (history.length > 30) history.pop(); // Batasi 30 item
+            
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            renderHistory(); 
+        }
+
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY));
+            
+            if (!Array.isArray(history) || history.length === 0) {
+                historyList.innerHTML = `<div class="text-center text-slate-500 py-8">Belum ada riwayat perhitungan.</div>`;
+                return;
+            }
+
+            let html = '<div class="space-y-4">';
+            history.forEach((item, index) => {
+                const statusClass = item.status === 'Patuh' ? 'text-green-600 bg-green-50 border-green-200' : 'text-red-600 bg-red-50 border-red-200';
+                
+                let detailView = item.details;
+                if (!detailView.includes('<')) { 
+                     detailView = `<div class="font-mono text-xs bg-white p-2 rounded border border-slate-100">${item.details}</div>`;
+                }
+
+                html += `
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition relative group">
+                    <button onclick="deleteHistoryItem(${index})" class="absolute top-3 right-3 text-slate-300 hover:text-red-500 transition p-1 rounded-full hover:bg-slate-50" title="Hapus">
+                        <i data-feather="x" class="w-4 h-4"></i>
+                    </button>
+
+                    <div class="flex justify-between items-start mb-2 pr-8">
+                        <span class="bg-blue-100 text-primary text-xs font-bold px-2 py-1 rounded uppercase tracking-wide">${item.type}</span>
+                        <span class="text-xs text-slate-400 font-mono">${item.timestamp}</span>
+                    </div>
+                    <div class="text-sm text-slate-600 space-y-1 mb-3">
+                        <div class="flex justify-between"><span>Luas Persil:</span> <span class="font-medium text-slate-800">${item.land} m²</span></div>
+                        <div class="flex justify-between"><span>Input Hitung:</span> <span class="font-medium text-slate-800">${item.input} m²</span></div>
+                        <div class="flex justify-between pt-2 border-t border-slate-100 mt-2">
+                            <span>Hasil:</span> 
+                            <span class="font-bold text-lg text-primary text-right">${item.result}</span>
+                        </div>
+                        <div class="text-right mt-1">
+                            <span class="px-2 py-0.5 rounded text-xs border ${statusClass} font-bold">${item.status}</span>
+                        </div>
+                    </div>
+                    
+                    <details class="text-xs text-slate-500 mb-3 cursor-pointer">
+                        <summary class="hover:text-primary transition font-medium">Lihat Rincian</summary>
+                        <div class="mt-2 pl-2 border-l-2 border-slate-200">
+                            ${detailView}
+                        </div>
+                    </details>
+
+                    <button onclick="restoreHistory(${index})" class="w-full btn btn-outline py-1.5 text-xs flex items-center justify-center">
+                        <i data-feather="corner-up-left" class="w-3 h-3 mr-1.5"></i> Gunakan Nilai Ini
+                    </button>
+                </div>
+                `;
+            });
+            html += '</div>';
+            historyList.innerHTML = html;
+            feather.replace();
+        }
+
+        function restoreHistory(index) {
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+            const data = history[index];
+            
+            if (data) {
+                document.getElementById('luasPersilInput-kalkulator').value = data.land;
+                
+                let inputId = '';
+                if (data.type === 'KDB') inputId = 'kdb-building';
+                else if (data.type === 'KLB') inputId = 'klb-floor';
+                else if (data.type === 'KDH') inputId = 'kdh-green';
+                
+                document.getElementById(inputId).value = data.input;
+                
+                if (data.modalRows) {
+                    modalStore[inputId] = data.modalRows;
+                } else {
+                    delete modalStore[inputId];
+                }
+
+                toggleHistory(); // Tutup modal
+                
+                if (!ATURAN_AKTIF) {
+                    alert(`Data ${data.type} berhasil dipulihkan!\n\nPENTING: Silakan pilih Lokasi (SWP/Zona) dan klik 'Cek Aturan' terlebih dahulu agar tombol 'Hitung' aktif.`);
+                } else {
+                    alert(`Data ${data.type} dipulihkan. Klik tombol 'Hitung ${data.type}' untuk melihat hasil terbaru.`);
+                }
+            }
+        }
+        
+        function clearHistory() {
+            if (confirm('Hapus semua riwayat perhitungan?')) {
+                localStorage.removeItem(HISTORY_KEY);
+                renderHistory(); 
+            }
+        }
+
+        // [BARU] Fungsi Hapus Satu Item
+        function deleteHistoryItem(index) {
+            if (confirm('Hapus riwayat ini?')) {
+                let history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+                history.splice(index, 1); 
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+                renderHistory();
+            }
+        }
+
+        function performCalculation(type) {
+            if (!ATURAN_AKTIF) { alert("Klik tombol 'Cek & Terapkan Aturan' dahulu."); return; }
+            const landArea = parseFloat(luasPersilInput.value);
+            if (isNaN(landArea) || landArea <= 0) { alert("Luas Persil tidak valid."); return; }
+
+            let inputId = '';
+            if (type === 'kdb') inputId = 'kdb-building';
+            else if (type === 'klb') inputId = 'klb-floor';
+            else if (type === 'kdh') inputId = 'kdh-green';
+            
+            let inputVal = parseFloat(document.getElementById(inputId).value);
+            if (isNaN(inputVal)) { alert("Masukkan nilai input terlebih dahulu."); return; }
+
+            let result, isPatuh, resultText;
+            
+            if (type === 'kdb') {
+                result = (inputVal / landArea) * 100;
+                isPatuh = result <= ATURAN_AKTIF.kdbMaks; 
+                resultText = `${result.toFixed(2)}%`;
+            } else if (type === 'klb') {
+                result = inputVal / landArea;
+                isPatuh = result <= ATURAN_AKTIF.klbMaks;
+                resultText = result.toFixed(2);
+            } else if (type === 'kdh') {
+                result = (inputVal / landArea) * 100;
+                isPatuh = result >= ATURAN_AKTIF.kdhMin;
+                
+                if (!isPatuh) {
+                    const selisihPersen = (ATURAN_AKTIF.kdhMin - result).toFixed(2);
+                    const selisihLuas = (landArea * (selisihPersen / 100)).toFixed(2);
+                    resultText = `<span class="text-red-600">${result.toFixed(2)}%</span><br><span class="text-xs text-red-500 font-normal">kurang ${selisihPersen}% (${selisihLuas} m²)</span>`;
+                } else {
+                    resultText = `${result.toFixed(2)}% <span class="text-xs text-slate-400 font-normal">(${inputVal.toFixed(2)} m²)</span>`;
+                }
+            }
+
+            const resultEl = document.getElementById(`${type}-result`);
+            const statusEl = document.getElementById(`${type}-status`);
+            
+            resultEl.innerHTML = resultText;
+            
+            if (isPatuh) {
+                statusEl.innerHTML = `<span class="status-badge status-patuh"><i data-feather="check" class="w-3 h-3 mr-1"></i> PATUH</span>`;
+            } else {
+                statusEl.innerHTML = `<span class="status-badge status-tidak-patuh"><i data-feather="x" class="w-3 h-3 mr-1"></i> TIDAK PATUH</span>`;
+            }
+            feather.replace(); 
+            
+            let detailsHTML = "";
+            let formula = "";
+            let cleanResult = resultText.replace(/<[^>]*>?/gm, ' '); 
+
+            if(type === 'kdb') formula = `(${inputVal} / ${landArea}) × 100% = <strong>${cleanResult}</strong>`;
+            else if(type === 'klb') formula = `${inputVal} / ${landArea} = <strong>${cleanResult}</strong>`;
+            else if(type === 'kdh') formula = `(${inputVal} / ${landArea}) × 100% = <strong>${cleanResult}</strong>`;
+
+            let currentModalRows = modalStore[inputId];
+            if (currentModalRows && currentModalRows.length > 0) {
+                 detailsHTML = currentModalRows.map((row, idx) => {
+                    let desc = "";
+                    let subtotal = 0;
+                    const valA = parseFloat(row.a) || 0;
+                    const valB = parseFloat(row.b) || 0;
+                    const valT = parseFloat(row.t) || 0;
+
+                    if (row.shape === 'persegi') { desc = `Persegi (${valA} x ${valB})`; subtotal = valA * valB; } 
+                    else if (row.shape === 'trapesium') { desc = `Trapesium ((${valA}+${valB})/2 x ${valT})`; subtotal = ((valA + valB) / 2) * valT; } 
+                    else if (row.shape === 'segitiga') { desc = `Segitiga (0.5 x ${valA} x ${valB})`; subtotal = 0.5 * valA * valB; } 
+                    else if (row.shape === 'manual') { desc = `Manual (${valA})`; subtotal = valA; }
+                    
+                    return `${idx+1}. ${desc} = <strong>${subtotal.toFixed(2)} m²</strong>`;
+                }).join('<br>');
+            } else {
+                detailsHTML = `Input Manual: ${inputVal} m²`;
+            }
+            
+            let finalDetailHTML = `
+                <div class="mb-2 space-y-1">${detailsHTML}</div>
+                <div class="pt-2 border-t border-slate-200 mt-1">
+                    <span class="text-[10px] text-slate-400 uppercase">Rumus:</span><br>
+                    <span class="font-mono text-[10px]">${formula}</span>
+                </div>
+            `;
+            
+            saveToHistory(type, inputVal, resultText, isPatuh ? 'Patuh' : 'Tidak Patuh', finalDetailHTML, currentModalRows);
+        }
+
+        // --- LOGIKA MODAL BANTU HITUNG ---
+        let targetInputId = ''; 
+        let rowCount = 0;
+
+        function openLuasModal(inputId, title = "Rincian Perhitungan") {
+            targetInputId = inputId;
+            document.getElementById('modal-title').textContent = title;
+            const modal = document.getElementById('luasModal');
+            const container = document.getElementById('calc-rows-container');
+            
+            container.innerHTML = ''; 
+            rowCount = 0;            
+            
+            if (modalStore[inputId] && modalStore[inputId].length > 0) {
+                modalStore[inputId].forEach(rowData => {
+                    addCalcRow(rowData);
+                });
+                calculateModalTotal();
+            } else {
+                document.getElementById('modal-total-result').innerText = '0'; 
+                addCalcRow(); 
+            }
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                 modal.firstElementChild.classList.remove('scale-95');
+                 modal.firstElementChild.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeLuasModal() {
+            const modal = document.getElementById('luasModal');
+            modal.firstElementChild.classList.remove('scale-100');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 200);
+        }
+
+        function addCalcRow(initialData = null) {
+            rowCount++;
+            const container = document.getElementById('calc-rows-container');
+            const rowHtml = `
+                <div class="calc-row bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative transition hover:border-blue-200 hover:shadow-md" id="row-${rowCount}">
+                    <button onclick="removeRow(${rowCount})" class="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition p-1 bg-slate-50 rounded-full"><i data-feather="trash-2" class="w-3 h-3"></i></button>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div class="md:col-span-4 mb-0 flex items-center gap-2">
+                             <div class="w-5 h-5 rounded-full bg-blue-100 text-primary flex items-center justify-center text-xs font-bold">${document.querySelectorAll('.calc-row').length + 1}</div>
+                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Area Hitung</span>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="form-label text-xs">Bentuk</label>
+                            <select class="form-select text-sm py-2" onchange="changeShape(this, ${rowCount})">
+                                <option value="persegi">Persegi/Kotak</option>
+                                <option value="trapesium">Trapesium</option>
+                                <option value="segitiga">Segitiga</option>
+                                <option value="manual">Input Langsung (m²)</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-1" id="container-a-${rowCount}">
+                            <label class="form-label text-xs" id="label-a-${rowCount}">Panjang (P)</label>
+                            <input type="number" class="form-input text-sm py-2" id="val-a-${rowCount}" oninput="calculateRow(${rowCount})" placeholder="0">
+                        </div>
+                        <div class="md:col-span-1" id="container-b-${rowCount}">
+                            <label class="form-label text-xs" id="label-b-${rowCount}">Lebar (L)</label>
+                            <input type="number" class="form-input text-sm py-2" id="val-b-${rowCount}" oninput="calculateRow(${rowCount})" placeholder="0">
+                        </div>
+                        <div class="md:col-span-1 hidden" id="container-t-${rowCount}">
+                            <label class="form-label text-xs">Tinggi (t)</label>
+                            <input type="number" class="form-input text-sm py-2" id="val-t-${rowCount}" oninput="calculateRow(${rowCount})" placeholder="0">
+                        </div>
+                        <div class="md:col-span-1 text-right bg-slate-50 p-2 rounded border border-slate-100">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">Subtotal</span>
+                            <div class="font-bold text-primary text-lg" id="subtotal-${rowCount}">0</div>
+                        </div>
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', rowHtml);
+            
+            if (initialData) {
+                const row = document.getElementById(`row-${rowCount}`);
+                const select = row.querySelector('select');
+                select.value = initialData.shape;
+                changeShape(select, rowCount); 
+                
+                document.getElementById(`val-a-${rowCount}`).value = initialData.a;
+                if(initialData.b !== undefined) document.getElementById(`val-b-${rowCount}`).value = initialData.b;
+                if(initialData.t !== undefined) document.getElementById(`val-t-${rowCount}`).value = initialData.t;
+                
+                calculateRow(rowCount);
+            }
+            
+            feather.replace();
+        }
+
+        function removeRow(id) {
+            document.getElementById(`row-${id}`).remove();
+            calculateModalTotal();
+            document.querySelectorAll('.calc-row').forEach((row, idx) => {
+                 row.querySelector('.bg-blue-100').innerText = idx + 1;
+            });
+        }
+
+        function changeShape(select, id) {
+            const shape = select.value;
+            const containerA = document.getElementById(`container-a-${id}`);
+            const containerB = document.getElementById(`container-b-${id}`);
+            const containerT = document.getElementById(`container-t-${id}`);
+            const labelA = document.getElementById(`label-a-${id}`);
+            const labelB = document.getElementById(`label-b-${id}`);
+            
+            if (!document.getElementById(`val-a-${id}`).value) {
+                 document.getElementById(`val-a-${id}`).value = '';
+                 document.getElementById(`val-b-${id}`).value = '';
+                 document.getElementById(`val-t-${id}`).value = '';
+            }
+
+            containerA.classList.remove('hidden');
+            containerB.classList.remove('hidden');
+            containerT.classList.add('hidden');
+
+            if (shape === 'persegi') {
+                labelA.innerText = 'Panjang (P)'; labelB.innerText = 'Lebar (L)';
+            } else if (shape === 'trapesium') {
+                labelA.innerText = 'Sisi Sejajar 1'; labelB.innerText = 'Sisi Sejajar 2'; containerT.classList.remove('hidden');
+            } else if (shape === 'segitiga') {
+                labelA.innerText = 'Alas (a)'; labelB.innerText = 'Tinggi (t)'; containerT.classList.add('hidden');
+            } else if (shape === 'manual') {
+                labelA.innerText = 'Luas (m²)'; containerB.classList.add('hidden');
+            }
+            calculateRow(id);
+        }
+
+        function calculateRow(id) {
+            const shape = document.querySelector(`#row-${id} select`).value;
+            const a = parseFloat(document.getElementById(`val-a-${id}`).value) || 0;
+            const b = parseFloat(document.getElementById(`val-b-${id}`).value) || 0;
+            let res = 0;
+
+            if (shape === 'persegi') res = a * b;
+            else if (shape === 'trapesium') { const t = parseFloat(document.getElementById(`val-t-${id}`).value) || 0; res = ((a + b) / 2) * t; }
+            else if (shape === 'segitiga') res = 0.5 * a * b;
+            else if (shape === 'manual') res = a;
+
+            document.getElementById(`subtotal-${id}`).innerText = res.toFixed(2);
+            calculateModalTotal();
+        }
+
+        function calculateModalTotal() {
+            let total = 0;
+            document.querySelectorAll('[id^="subtotal-"]').forEach(el => total += parseFloat(el.innerText));
+            document.getElementById('modal-total-result').innerText = total.toFixed(2);
+        }
+
+        function applyLuasResult() {
+            const total = document.getElementById('modal-total-result').innerText;
+            document.getElementById(targetInputId).value = total;
+            
+            let currentRows = [];
+            document.querySelectorAll('.calc-row').forEach((row, index) => {
+                const id = row.id.split('-')[1];
+                const shape = row.querySelector('select').value;
+                const a = document.getElementById(`val-a-${id}`).value;
+                const b = document.getElementById(`val-b-${id}`).value;
+                const t = document.getElementById(`val-t-${id}`).value;
+                
+                currentRows.push({ shape, a, b, t });
+            });
+            modalStore[targetInputId] = currentRows;
+
+            closeLuasModal();
+        }
+
+        swpSelect.addEventListener('change', updateZonaOptionsKalkulator);
+        zonaSelect.addEventListener('change', tampilkanSubZonaKalkulator);
+        [swpSelect, zonaSelect, subZonaSelect, luasPersilKategoriSelect, luasPersilInput].forEach(el => {
+            el.addEventListener('change', resetRules);
+        });
+        luasPersilInput.addEventListener('input', resetRules);
+
+        getRulesButton.addEventListener('click', getRulesFromServer);
+        document.getElementById('calculate-kdb').addEventListener('click', () => performCalculation('kdb'));
+        document.getElementById('calculate-klb').addEventListener('click', () => performCalculation('klb'));
+        document.getElementById('calculate-kdh').addEventListener('click', () => performCalculation('kdh'));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateZonaOptionsKalkulator();
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

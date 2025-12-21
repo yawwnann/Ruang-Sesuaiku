@@ -1,0 +1,47 @@
+:root {
+    --primary-color: #0056b3; --primary-color-dark: #004085; --secondary-color: #f8f9fa; --text-color: #212529; --text-muted: #6c757d; --border-color: #dee2e6; --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); --success-bg: #d4edda; --success-border: #c3e6cb; --success-text: #155724; --danger-bg: #f8d7da; --danger-border: #f5c6cb; --danger-text: #721c24; --font-family: 'Roboto', sans-serif;
+}
+body { font-family: var(--font-family); background-color: var(--secondary-color); color: var(--text-color); margin: 0; padding: 0; }
+* { box-sizing: border-box; }
+.login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+.login-container { background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: var(--card-shadow); max-width: 400px; width: 100%; text-align: center; }
+.login-header { margin-bottom: 30px; }
+.login-header .logo-icon { font-size: 3em; color: var(--primary-color); margin-bottom: 10px; display: block; }
+.login-header h2 { color: var(--primary-color-dark); margin: 0; font-size: 1.8em; }
+.login-header p { font-size: 0.95em; color: var(--text-muted); margin-top: 5px; }
+.sidebar { height: 100%; width: 0; position: fixed; z-index: 999; top: 0; left: 0; background-color: var(--primary-color-dark); overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+.sidebar h3 { color: white; padding: 0 32px 10px 32px; margin: 0; font-size: 1.1em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+.sidebar a { padding: 15px 32px; text-decoration: none; font-size: 18px; color: white; display: flex; align-items: center; transition: 0.3s; }
+.sidebar a:hover { background-color: var(--primary-color); }
+.sidebar a .icon { font-size: 1.5em; margin-right: 15px; width: 30px; text-align: center; }
+.sidebar .closebtn { position: absolute; top: 10px; right: 25px; font-size: 28px; color: white; }
+.sidebar hr { border-top: 1px solid rgba(255, 255, 255, 0.2); margin: 20px 32px; border-bottom: 0; }
+.hamburger-menu { position: fixed; top: 20px; left: 20px; z-index: 1000; cursor: pointer; background-color: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); transition: 0.3s; }
+.hamburger-menu div { width: 30px; height: 3px; background-color: var(--primary-color); margin: 6px 0; transition: 0.3s; }
+#main { transition: margin-left 0.3s; padding: 40px 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+.container { background-color: #ffffff; padding: 30px 40px; border-radius: 12px; box-shadow: var(--card-shadow); max-width: 600px; width: 100%; }
+.container h1 { text-align: center; color: var(--primary-color-dark); margin-top: 0; margin-bottom: 5px; font-size: 1.8em; }
+.container .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 0.95em; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; }
+.input-group { margin-bottom: 18px; text-align: left; }
+label { display: block; margin-bottom: 8px; font-weight: 700; color: var(--text-color); font-size: 0.9em; }
+input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; transition: border-color 0.3s, box-shadow 0.3s; font-size: 1em; }
+input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 5px rgba(0, 86, 179, 0.3); }
+button, .button { width: 100%; background-color: var(--primary-color); color: white; padding: 14px 15px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 1.1em; font-weight: 700; transition: background-color 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+button:hover, .button:hover { background-color: var(--primary-color-dark); }
+button:disabled { background-color: #6c757d; cursor: not-allowed; }
+.info-text { margin-top: 20px; font-size: 0.85em; color: var(--text-muted); }
+hr { border: none; border-top: 1px dashed var(--border-color); margin: 25px 0; }
+.hasil-kalkulator { margin-top: 30px; padding: 25px; background-color: var(--secondary-color); border: 1px solid var(--border-color); border-radius: 8px; }
+.hasil-kalkulator h4 { color: var(--primary-color-dark); margin-top: 0; font-size: 1.5em; text-align: center; }
+.hasil-kalkulator p { margin: 12px 0; padding: 12px; background-color: white; border-radius: 6px; font-size: 1.1em; border: 1px solid #eee; }
+.hasil-kalkulator p strong { color: var(--primary-color); }
+.hasil-kalkulator .rumus { font-size: 0.9em; color: var(--text-muted); font-style: italic; margin-top: 5px; }
+#hasil { margin-top: 30px; padding: 25px; border-radius: 8px; text-align: center; font-weight: 700; border: 2px solid; }
+#hasil p, #hasil ul { font-weight: 400; color: var(--text-color); }
+#hasil h2 { margin-top: 0; font-size: 2.5em; margin-bottom: 10px; }
+.patuh { background-color: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+.tidak-patuh { background-color: var(--danger-bg); color: var(--danger-text); border-color: var(--danger-border); }
+#hasil li::before {
+    content: none !important; /* Paksa hapus content */
+    display: none !important;
+}

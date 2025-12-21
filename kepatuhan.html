@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cek Kepatuhan Tata Ruang | RuangSesuaiku</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            colors: {
+              primary: "#1e40af", // Blue 800
+              secondary: "#3b82f6", // Blue 500
+              surface: "#f8fafc", // Slate 50
+            },
+          },
+        },
+      };
+    </script>
+
+    <style type="text/tailwindcss">
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        @apply bg-slate-50 text-slate-800 font-sans;
+      }
+
+      /* Form Styling */
+      .form-label {
+        @apply block text-sm font-semibold text-slate-700 mb-1.5;
+      }
+      .form-input,
+      .form-select {
+        @apply block w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-sm shadow-sm 
+            placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 
+            transition duration-200 disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed;
+      }
+
+      /* Button Styling */
+      .btn {
+        @apply inline-flex items-center justify-center px-5 py-2.5 border border-transparent rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed;
+      }
+      .btn-primary {
+        @apply text-white bg-primary hover:bg-blue-800 focus:ring-primary;
+      }
+      .btn-secondary {
+        @apply text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 focus:ring-slate-400;
+      }
+      .btn-outline {
+        @apply text-primary bg-white border-primary hover:bg-blue-50 focus:ring-primary;
+      }
+
+      /* Stepper Styling */
+      .step-item {
+        @apply relative z-10 flex flex-col items-center flex-1;
+      }
+      .step-number {
+        @apply w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 border-2;
+      }
+      .step-number.active {
+        @apply bg-primary text-white border-primary shadow-lg scale-110;
+      }
+      .step-number.completed {
+        @apply bg-emerald-500 text-white border-emerald-500;
+      }
+      .step-number.inactive {
+        @apply bg-white text-slate-400 border-slate-200;
+      }
+
+      /* Progress Bar Line */
+      .progress-track {
+        @apply absolute top-5 left-0 w-full h-1 bg-slate-200 -z-0;
+      }
+      .progress-fill {
+        @apply h-full bg-primary transition-all duration-500 ease-in-out;
+      }
+
+      /* Card & Section */
+      .card {
+        @apply bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8;
+      }
+      .section-title {
+        @apply text-xl font-bold text-slate-800 mb-6 flex items-center border-b border-slate-100 pb-4;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 min-h-screen flex flex-col">
+    <nav class="bg-white shadow-md sticky top-0 z-40 border-b border-slate-100">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex justify-between items-center">
+          <a href="index.html" class="flex items-center gap-2 group">
+            <div
+              class="bg-primary text-white p-2 rounded-lg group-hover:bg-blue-700 transition"
+            >
+              <i data-feather="map" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-slate-800 leading-none">
+                RuangSesuaiku
+              </h1>
+              <span class="text-xs text-slate-500 font-medium tracking-wide"
+                >DALWAS</span
+              >
+            </div>
+          </a>
+
+          <div class="hidden md:flex space-x-2 items-center">
+            <a
+              href="kepatuhan.html"
+              class="px-4 py-2 text-primary font-bold bg-blue-50 rounded-lg transition flex items-center"
+            >
+              <i data-feather="check-square" class="mr-2 w-4 h-4"></i> Cek
+              Kepatuhan
+            </a>
+            <a
+              href="kalkulator.html"
+              class="px-4 py-2 text-slate-600 hover:text-primary hover:bg-blue-50 rounded-lg transition flex items-center"
+            >
+              <i data-feather="percent" class="mr-2 w-4 h-4"></i> Kalkulator
+              Koefisien
+            </a>
+            <div class="h-6 w-px bg-slate-300 mx-2"></div>
+            <button
+              onclick="toggleHistory()"
+              class="text-slate-600 hover:text-primary px-3 py-2 rounded-lg hover:bg-slate-100 transition flex items-center text-sm font-medium"
+            >
+              <i data-feather="clock" class="mr-2 w-4 h-4"></i> Riwayat
+            </button>
+          </div>
+
+          <button
+            id="mobile-menu-button"
+            class="md:hidden text-slate-600 hover:text-primary focus:outline-none p-2"
+          >
+            <i data-feather="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+      <div
+        id="mobile-menu"
+        class="md:hidden hidden bg-white border-t border-slate-100 shadow-lg absolute w-full z-50"
+      >
+        <div class="p-2 space-y-1">
+          <a
+            href="kepatuhan.html"
+            class="block px-4 py-3 rounded-lg bg-blue-50 text-primary font-medium"
+            >Cek Kepatuhan</a
+          >
+          <a
+            href="kalkulator.html"
+            class="block px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50"
+            >Kalkulator Koefisien</a
+          >
+          <a
+            href="regulasi.html"
+            class="block px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50"
+            >Regulasi</a
+          >
+          <a
+            href="tentang.html"
+            class="block px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50"
+            >Tentang Kami</a
+          >
+          <a
+            href="bantuan.html"
+            class="block px-4 py-3 text-white hover:bg-primary transition duration-300"
+            >Bantuan</a
+          >
+          <button
+            onclick="toggleHistory()"
+            class="w-full text-left px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center"
+          >
+            <i data-feather="clock" class="mr-2 h-4 w-4"></i> Riwayat Penggunaan
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-10 max-w-5xl flex-grow">
+      <div class="text-center mb-10">
+        <span
+          class="bg-blue-100 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block"
+          >Layanan Mandiri</span
+        >
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3">
+          Cek Kepatuhan Tata Ruang
+        </h1>
+        <p class="text-slate-500 max-w-2xl mx-auto text-lg">
+          Verifikasi otomatis kesesuaian rencana bangunan Anda dengan peraturan
+          zonasi dan tata ruang yang berlaku.
+        </p>
+      </div>
+
+      <div class="mb-12 max-w-3xl mx-auto">
+        <div class="relative flex justify-between items-start">
+          <div
+            class="absolute top-5 left-0 w-full h-1 bg-slate-200 rounded-full -z-10"
+          ></div>
+
+          <div id="step-1-indicator" class="step-item">
+            <div class="step-number active bg-white">1</div>
+            <span class="mt-2 text-xs md:text-sm font-bold text-slate-800"
+              >Lokasi</span
+            >
+          </div>
+
+          <div class="absolute top-5 left-[16%] w-[34%] h-1 -z-0">
+            <div
+              id="progress-1-2"
+              class="h-full bg-primary w-0 transition-all duration-500"
+            ></div>
+          </div>
+
+          <div id="step-2-indicator" class="step-item">
+            <div class="step-number inactive bg-white">2</div>
+            <span class="mt-2 text-xs md:text-sm font-medium text-slate-500"
+              >Data Teknis</span
+            >
+          </div>
+
+          <div class="absolute top-5 right-[16%] w-[34%] h-1 -z-0">
+            <div
+              id="progress-2-3"
+              class="h-full bg-primary w-0 transition-all duration-500"
+            ></div>
+          </div>
+
+          <div id="step-3-indicator" class="step-item">
+            <div class="step-number inactive bg-white">3</div>
+            <span class="mt-2 text-xs md:text-sm font-medium text-slate-500"
+              >Hasil</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <form id="formKepatuhan" class="card relative overflow-hidden" novalidate>
+        <div
+          class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-blue-50 rounded-full opacity-50 blur-3xl pointer-events-none"
+        ></div>
+
+        <div id="step-1">
+          <h2 class="section-title">
+            <i data-feather="map-pin" class="mr-3 text-primary"></i>Informasi
+            Lokasi & Zonasi
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+              <label for="swp" class="form-label"
+                >Sub Wilayah Perencanaan (SWP)
+                <span class="text-red-500">*</span></label
+              >
+              <select id="swp" name="swp" class="form-select" required>
+                <option value="" selected disabled>
+                  -- Pilih Kecamatan / SWP --
+                </option>
+                <option value="A">SWP A (Kecamatan Danurejan)</option>
+                <option value="B">SWP B (Kecamatan Gedongtengen)</option>
+                <option value="C">SWP C (Kecamatan Gondokusuman)</option>
+                <option value="D">SWP D (Kecamatan Gondomanan)</option>
+                <option value="E">SWP E (Kecamatan Jetis)</option>
+                <option value="F">SWP F (Kecamatan Kotagede)</option>
+                <option value="G">SWP G (Kecamatan Kraton)</option>
+                <option value="H">SWP H (Kecamatan Mantrijeron)</option>
+                <option value="I">SWP I (Kecamatan Mergangsan)</option>
+                <option value="J">SWP J (Kelurahan Ngampilan)</option>
+                <option value="K">SWP K (Kecamatan Pakualaman)</option>
+                <option value="L">SWP L (Kecamatan Tegalrejo)</option>
+                <option value="M">SWP M (Kecamatan Umbulharjo)</option>
+                <option value="N">SWP N (Kecamatan Wirobrajan)</option>
+              </select>
+            </div>
+            <div>
+              <label for="zona" class="form-label"
+                >Zona Peruntukan <span class="text-red-500">*</span></label
+              >
+              <select
+                id="zona"
+                name="zona"
+                class="form-select"
+                required
+                disabled
+              >
+                <option value="">-- Pilih SWP Dahulu --</option>
+              </select>
+            </div>
+            <div>
+              <label for="luasPersil" class="form-label"
+                >Kategori Luas Persil <span class="text-red-500">*</span></label
+              >
+              <select
+                id="luasPersil"
+                name="luasPersil"
+                class="form-select"
+                required
+              >
+                <option value="" selected disabled>-- Pilih Kategori --</option>
+                <option value="40-100">40 - 100 m²</option>
+                <option value="101-200">101 - 200 m²</option>
+                <option value="201-400">201 - 400 m²</option>
+                <option value="401-1000">401 - 1000 m²</option>
+                <option value=">1000">> 1000 m²</option>
+              </select>
+            </div>
+            <div
+              id="subZonaContainer"
+              style="display: none"
+              class="md:col-span-2"
+            >
+              <label for="subZona" class="form-label"
+                >Sub-Zona Spesifik <span class="text-red-500">*</span></label
+              >
+              <select id="subZona" name="subZona" class="form-select">
+                <option value="">-- Pilih Sub-Zona --</option>
+              </select>
+              <p class="text-xs text-slate-500 mt-1">
+                *Pilih spesifik jika lokasi Anda berada di area khusus.
+              </p>
+            </div>
+          </div>
+          <div class="mt-8 flex justify-end">
+            <button type="button" id="nextStep1" class="btn btn-primary pl-6">
+              Selanjutnya
+              <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="step-2" style="display: none">
+          <h2 class="section-title">
+            <i data-feather="edit-3" class="mr-3 text-primary"></i>Data Teknis
+            Bangunan
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div
+              class="md:col-span-2 bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start gap-3 mb-2"
+            >
+              <i
+                data-feather="info"
+                class="text-primary mt-0.5 flex-shrink-0"
+              ></i>
+              <p class="text-sm text-slate-700">
+                Masukkan data rencana bangunan Anda. Sistem akan
+                membandingkannya dengan aturan RDTR secara otomatis.
+              </p>
+            </div>
+
+            <div>
+              <label for="luasPersilInput" class="form-label"
+                >Luas Persil (m²) <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                id="luasPersilInput"
+                name="luasPersilInput"
+                class="form-input"
+                required
+                step="any"
+                min="0"
+                placeholder="Contoh: 150"
+              />
+            </div>
+            <div>
+              <label for="kdbDiusulkan" class="form-label"
+                >KDB Hasil Pemeriksaan (%)
+                <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                id="kdbDiusulkan"
+                name="kdbDiusulkan"
+                class="form-input"
+                required
+                step="any"
+                min="0"
+                placeholder="Contoh: 60"
+              />
+            </div>
+            <div>
+              <label for="luasBangunan" class="form-label"
+                >Luas Bangunan Dasar (m²)
+                <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                id="luasBangunan"
+                name="luasBangunan"
+                class="form-input"
+                required
+                step="any"
+                min="0"
+                placeholder="Contoh: 90"
+              />
+            </div>
+            <div>
+              <label for="luasLantai" class="form-label"
+                >Total Luas Lantai (m²)
+                <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                id="luasLantai"
+                name="luasLantai"
+                class="form-input"
+                required
+                step="any"
+                min="0"
+                placeholder="Contoh: 180"
+              />
+            </div>
+            <div>
+              <label for="ketinggian" class="form-label"
+                >Ketinggian Bangunan (m)
+                <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                id="ketinggian"
+                name="ketinggian"
+                class="form-input"
+                required
+                step="any"
+                min="0"
+                placeholder="Contoh: 8.5"
+              />
+            </div>
+            <div>
+              <label for="kdhDiusulkan" class="form-label"
+                >KDH Hasil Pemeriksaan (%)
+                <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                id="kdhDiusulkan"
+                name="kdhDiusulkan"
+                class="form-input"
+                required
+                step="any"
+                min="0"
+                placeholder="Contoh: 25"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label for="gsbDiusulkan" class="form-label"
+                >Garis Sempadan Bangunan (GSB) Diukur (m)
+                <span class="text-slate-400 text-sm font-normal"
+                  >(Opsional)</span
+                ></label
+              >
+              <input
+                type="number"
+                id="gsbDiusulkan"
+                name="gsbDiusulkan"
+                class="form-input"
+                step="any"
+                min="0"
+                placeholder="Jarak dinding terluar ke batas jalan"
+              />
+            </div>
+          </div>
+          <div
+            class="mt-8 flex justify-between gap-3 pt-6 border-t border-slate-100"
+          >
+            <button type="button" id="prevStep2" class="btn btn-secondary">
+              <i data-feather="arrow-left" class="mr-2 w-4 h-4"></i>Kembali
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i data-feather="check-circle" class="mr-2 w-4 h-4"></i>Periksa
+              Kepatuhan
+            </button>
+          </div>
+        </div>
+
+        <div id="step-3" style="display: none">
+          <h2 class="section-title">
+            <i data-feather="clipboard" class="mr-3 text-primary"></i>Hasil
+            Pemeriksaan
+          </h2>
+
+          <div id="hasil" class="min-h-[150px] mb-8">
+            <div
+              class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"
+            >
+              <div class="animate-pulse flex flex-col items-center">
+                <div class="h-10 w-10 bg-slate-200 rounded-full mb-3"></div>
+                <div class="h-4 w-48 bg-slate-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="data-pemohon-section" class="mt-8">
+            <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <h2
+                class="text-lg font-bold text-slate-800 mb-4 flex items-center"
+              >
+                <i data-feather="user" class="mr-2 text-primary w-5 h-5"></i>
+                Data Pemohon
+                <span
+                  class="ml-2 text-xs font-normal text-slate-500 bg-white px-2 py-1 rounded border border-slate-200"
+                  >Wajib untuk cetak laporan</span
+                >
+              </h2>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label for="namaPemohon" class="form-label"
+                    >Nama Pemohon/Usaha
+                    <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="namaPemohon"
+                    name="namaPemohon"
+                    class="form-input"
+                    required
+                    placeholder="Nama lengkap"
+                  />
+                </div>
+                <div>
+                  <label for="nikPemohon" class="form-label"
+                    >NIK / NIB <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="nikPemohon"
+                    name="nikPemohon"
+                    class="form-input"
+                    required
+                    placeholder="Nomor Induk"
+                  />
+                </div>
+                <div class="md:col-span-2">
+                  <label for="alamatPemohon" class="form-label"
+                    >Alamat Lengkap <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="alamatPemohon"
+                    name="alamatPemohon"
+                    class="form-input"
+                    required
+                    placeholder="Jalan, RT/RW, Kelurahan, Kecamatan"
+                  />
+                </div>
+                <div>
+                  <label for="jenisKegiatan" class="form-label"
+                    >Jenis Kegiatan <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="jenisKegiatan"
+                    name="jenisKegiatan"
+                    class="form-input"
+                    required
+                    placeholder="Contoh: Rumah Tinggal, Toko"
+                  />
+                </div>
+                <div>
+                  <label for="nomorTelepon" class="form-label"
+                    >Nomor Telepon <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    type="tel"
+                    id="nomorTelepon"
+                    name="nomorTelepon"
+                    class="form-input"
+                    required
+                    placeholder="08..."
+                  />
+                </div>
+                <div class="md:col-span-2">
+                  <label for="emailPemohon" class="form-label"
+                    >Email <span class="text-red-500">*</span></label
+                  >
+                  <input
+                    type="email"
+                    id="emailPemohon"
+                    name="emailPemohon"
+                    class="form-input"
+                    required
+                    placeholder="nama@email.com"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-8 pt-6 border-t border-slate-200">
+                <div class="mb-6">
+                  <h3 class="text-lg font-bold text-slate-800">
+                    Unduh Hasil Dokumen
+                  </h3>
+                  <p class="text-slate-500 text-sm">
+                    Silakan pilih jenis dokumen yang ingin Anda cetak atau unduh
+                    sesuai kebutuhan.
+                  </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div
+                    class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col"
+                  >
+                    <div class="flex items-center gap-4 mb-4">
+                      <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                        <i data-feather="file-text" class="w-6 h-6"></i>
+                      </div>
+                      <div>
+                        <h4 class="font-bold text-slate-700">
+                          Rekomendasi PMP
+                        </h4>
+                        <span
+                          class="text-xs font-medium bg-blue-100 text-blue-700 py-0.5 px-2 rounded"
+                          >Format .docx</span
+                        >
+                      </div>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-6 flex-grow">
+                      Dokumen Pernyataan Mandiri untuk Pelaku Usaha Mikro dan
+                      Kecil (UMK). Digunakan sebagai acuan penilaian mandiri.
+                    </p>
+                    <button
+                      type="button"
+                      id="exportPMPButton"
+                      onclick="exportToWord('PMP')"
+                      class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                      <i data-feather="download" class="w-4 h-4"></i> Unduh PMP
+                    </button>
+                  </div>
+
+                  <div
+                    class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col"
+                  >
+                    <div class="flex items-center gap-4 mb-4">
+                      <div
+                        class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"
+                      >
+                        <i data-feather="check-square" class="w-6 h-6"></i>
+                      </div>
+                      <div>
+                        <h4 class="font-bold text-slate-700">
+                          Rekomendasi KKPR
+                        </h4>
+                        <span
+                          class="text-xs font-medium bg-emerald-100 text-emerald-700 py-0.5 px-2 rounded"
+                          >Format .docx</span
+                        >
+                      </div>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-6 flex-grow">
+                      Dokumen Kepatuhan Kegiatan Pemanfaatan Ruang (KKPR).
+                      Digunakan untuk validasi kesesuaian pasca pembangunan.
+                    </p>
+                    <button
+                      type="button"
+                      id="exportIKKPRButton"
+                      onclick="exportToWord('IKKPR')"
+                      class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                      <i data-feather="download" class="w-4 h-4"></i> Unduh KKPR
+                    </button>
+                  </div>
+
+                  <div
+                    class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col"
+                  >
+                    <div class="flex items-center gap-4 mb-4">
+                      <div class="p-3 bg-purple-50 text-purple-600 rounded-lg">
+                        <i data-feather="clipboard" class="w-6 h-6"></i>
+                      </div>
+                      <div>
+                        <h4 class="font-bold text-slate-700">
+                          Berita Acara (BA)
+                        </h4>
+                        <span
+                          class="text-xs font-medium bg-purple-100 text-purple-700 py-0.5 px-2 rounded"
+                          >Format .docx</span
+                        >
+                      </div>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-6 flex-grow">
+                      Dokumen hasil pemeriksaan dan pengukuran lapangan secara
+                      teknis. Berisi rincian data survei.
+                    </p>
+                    <button
+                      type="button"
+                      id="exportBAButton"
+                      onclick="exportToWord('BA')"
+                      class="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                      <i data-feather="download" class="w-4 h-4"></i> Unduh BA
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex justify-between gap-3">
+            <button type="button" id="prevStep3" class="btn btn-secondary">
+              <i data-feather="arrow-left" class="mr-2 w-4 h-4"></i>Data Teknis
+            </button>
+            <button type="button" id="resetForm" class="btn btn-outline">
+              <i data-feather="rotate-ccw" class="mr-2 w-4 h-4"></i>Mulai Ulang
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
+
+    <footer class="bg-slate-900 text-white py-8 mt-auto">
+      <div class="container mx-auto px-4 text-center">
+        <p class="text-slate-400 text-sm">
+          &copy; 2025 Bidang Pengendalian dan Pengawasan Tata Ruang Kota
+          Yogyakarta Hak Cipta Dilindungi.
+        </p>
+      </div>
+    </footer>
+
+    <div
+      id="historyModal"
+      class="fixed inset-0 z-50 hidden opacity-0 pointer-events-none transition-all duration-300"
+    >
+      <div
+        class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+        onclick="toggleHistory()"
+      ></div>
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div
+          class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col transform transition-all duration-300 scale-95"
+          id="modalContent"
+        >
+          <div
+            class="p-5 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-2xl"
+          >
+            <h3 class="text-lg font-bold text-slate-800 flex items-center">
+              <span class="p-1.5 bg-blue-50 text-primary rounded mr-2"
+                ><i data-feather="clock" class="w-4 h-4"></i
+              ></span>
+              Riwayat Penggunaan
+            </h3>
+            <button
+              onclick="toggleHistory()"
+              class="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-50 transition"
+            >
+              <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <div
+            class="p-5 overflow-y-auto flex-1 bg-slate-50/50"
+            id="historyList"
+          ></div>
+
+          <div
+            class="p-4 border-t border-slate-100 bg-white rounded-b-2xl flex justify-between items-center shadow-[0_-5px_15px_rgba(0,0,0,0.02)]"
+          >
+            <button
+              onclick="clearHistory()"
+              class="text-sm text-red-500 hover:text-red-700 font-medium px-2 py-1 hover:bg-red-50 rounded transition"
+            >
+              Hapus Semua
+            </button>
+            <button
+              onclick="toggleHistory()"
+              class="btn btn-secondary px-6 py-2"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="historyDetailModal"
+      class="fixed inset-0 z-[60] hidden opacity-0 pointer-events-none transition-all duration-300"
+    >
+      <div
+        class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+        onclick="closeHistoryDetail()"
+      ></div>
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div
+          class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-all duration-300 scale-95"
+          id="detailContent"
+        >
+          <div
+            class="p-5 border-b border-slate-100 flex justify-between items-center"
+          >
+            <h3 class="text-lg font-bold text-slate-800">Detail Pemeriksaan</h3>
+            <button
+              onclick="closeHistoryDetail()"
+              class="text-slate-400 hover:text-slate-600"
+            >
+              <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <div class="p-6 overflow-y-auto" id="historyDetailBody"></div>
+          <div
+            class="p-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl text-right"
+          >
+            <button
+              onclick="closeHistoryDetail()"
+              class="btn btn-secondary px-6"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      feather.replace();
+
+      // --- Existing Variables ---
+      const step1Div = document.getElementById("step-1");
+      const dataPemohonDiv = document.getElementById("data-pemohon-section");
+      const step2Div = document.getElementById("step-2");
+      const step3Div = document.getElementById("step-3");
+
+      const step1Indicator = document.getElementById("step-1-indicator");
+      const step2Indicator = document.getElementById("step-2-indicator");
+      const step3Indicator = document.getElementById("step-3-indicator");
+
+      const progress12 = document.getElementById("progress-1-2");
+      const progress23 = document.getElementById("progress-2-3");
+
+      const nextStep1Button = document.getElementById("nextStep1");
+      const prevStep2Button = document.getElementById("prevStep2");
+      const prevStep3Button = document.getElementById("prevStep3");
+      const resetButton = document.getElementById("resetForm");
+
+      // --- HISTORY LOGIC ---
+
+      // Restore form data if returning from login
+      window.addEventListener("DOMContentLoaded", () => {
+        // Clear old localStorage data (if any)
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("loginTime");
+        localStorage.removeItem("role");
+        localStorage.removeItem("username");
+
+        const savedFormData = sessionStorage.getItem("kepatuhanFormStep1");
+        if (savedFormData) {
+          try {
+            const formData = JSON.parse(savedFormData);
+            document.getElementById("swp").value = formData.swp || "";
+            if (formData.swp && typeof updateZonaOptions === "function") {
+              updateZonaOptions();
+            }
+            if (formData.zona) {
+              setTimeout(() => {
+                document.getElementById("zona").value = formData.zona;
+                if (typeof tampilkanSubZona === "function") {
+                  tampilkanSubZona();
+                }
+              }, 100);
+            }
+            if (formData.luasPersil) {
+              document.getElementById("luasPersil").value = formData.luasPersil;
+            }
+            if (formData.subZona) {
+              setTimeout(() => {
+                document.getElementById("subZona").value = formData.subZona;
+              }, 500);
+            }
+
+            // Redirect to Step 2 (Data Teknis) after login
+            setTimeout(() => {
+              step1Div.style.display = "none";
+              step2Div.style.display = "block";
+              step3Div.style.display = "none";
+              updateStepIndicator(2);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              feather.replace();
+            }, 600);
+
+            // Clear saved data
+            sessionStorage.removeItem("kepatuhanFormStep1");
+          } catch (e) {
+            console.error("Error restoring form data:", e);
+          }
+        }
+      });
+
+      // 1. Function to show/hide History List modal
+      function toggleHistory() {
+        const modal = document.getElementById("historyModal");
+        const content = document.getElementById("modalContent");
+        const body = document.body;
+
+        if (modal.classList.contains("hidden")) {
+          // Open List
+          modal.classList.remove("hidden");
+          setTimeout(() => {
+            modal.classList.remove("opacity-0", "pointer-events-none");
+            content.classList.remove("scale-95");
+            content.classList.add("scale-100");
+          }, 10);
+          body.classList.add("overflow-hidden"); // Kunci scroll
+          renderHistory();
+        } else {
+          // Close List
+          modal.classList.add("opacity-0", "pointer-events-none");
+          content.classList.remove("scale-100");
+          content.classList.add("scale-95");
+          setTimeout(() => {
+            modal.classList.add("hidden");
+          }, 300);
+          body.classList.remove("overflow-hidden"); // Buka scroll
+        }
+      }
+
+      // 2. Render History
+      function renderHistory() {
+        const historyList = document.getElementById("historyList");
+        const history = JSON.parse(
+          localStorage.getItem("riwayat_kepatuhan") || "[]"
+        );
+
+        if (history.length === 0) {
+          historyList.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <i data-feather="inbox" class="text-gray-400 w-8 h-8"></i>
+                        </div>
+                        <p class="text-gray-500">Belum ada riwayat pengecekan.</p>
+                    </div>`;
+          feather.replace();
+          return;
+        }
+
+        let html = '<div class="space-y-3">';
+        history.forEach((item, index) => {
+          const date = new Date(item.timestamp).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const statusColor =
+            item.status === "Sesuai"
+              ? "text-green-600 bg-green-50 border-green-200"
+              : "text-red-600 bg-red-50 border-red-200";
+
+          const hasFullData = item.inputData && item.resultData;
+          const btnDisabled = hasFullData
+            ? ""
+            : "disabled opacity-50 cursor-not-allowed";
+          const tooltip = hasFullData ? "" : 'title="Data lama tidak lengkap"';
+
+          html += `
+                <div class="border rounded-lg p-3 hover:shadow-md transition bg-white group relative">
+                    
+                    <button onclick="deleteHistoryItem(${index})" class="absolute top-2 right-2 p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition" title="Hapus Riwayat Ini">
+                        <i data-feather="trash-2" class="w-4 h-4"></i>
+                    </button>
+
+                    <div class="flex justify-between items-start mb-2 pr-6">
+                        <span class="text-xs text-gray-400 font-mono">${date}</span>
+                        <span class="text-xs font-bold px-2 py-1 rounded border ${statusColor}">${
+            item.status || "Diperiksa"
+          }</span>
+                    </div>
+                    <div class="text-sm font-semibold text-gray-800">SWP ${
+                      item.swp
+                    } - Zona ${item.zona}</div>
+                    <div class="text-xs text-gray-600 mt-1 mb-3">
+                        Luas: ${item.luas}m² | KDB: ${item.kdb}%
+                    </div>
+                    
+                    <div class="flex gap-2 border-t pt-2 mt-2">
+                        <button onclick="restoreHistory(${index})" ${btnDisabled} ${tooltip} class="flex-1 flex items-center justify-center text-xs bg-blue-50 text-blue-700 py-1.5 rounded hover:bg-blue-100 transition font-medium">
+                            <i data-feather="corner-up-left" class="w-3 h-3 mr-1.5"></i> Gunakan
+                        </button>
+                        <button onclick="viewHistoryDetail(${index})" ${btnDisabled} ${tooltip} class="flex-1 flex items-center justify-center text-xs bg-gray-50 text-gray-700 py-1.5 rounded hover:bg-gray-100 transition font-medium">
+                            <i data-feather="eye" class="w-3 h-3 mr-1.5"></i> Detail
+                        </button>
+                    </div>
+                </div>`;
+        });
+        html += "</div>";
+        historyList.innerHTML = html;
+        feather.replace();
+      }
+
+      // 3. Save Helper (Disabled - tidak menyimpan ke localStorage)
+      window.saveToHistory = function (data) {
+        // Fungsi dinonaktifkan - data tidak disimpan
+        return;
+      };
+
+      // 4. Restore Function
+      async function restoreHistory(index) {
+        const history = JSON.parse(
+          localStorage.getItem("riwayat_kepatuhan") || "[]"
+        );
+        const item = history[index];
+
+        if (!item || !item.inputData) {
+          alert("Data riwayat tidak lengkap atau rusak.");
+          return;
+        }
+
+        const input = item.inputData;
+
+        document.getElementById("formKepatuhan").reset();
+        toggleHistory(); // Tutup modal list
+
+        document.getElementById("swp").value = input.swpPilihan;
+        if (typeof updateZonaOptions === "function") updateZonaOptions();
+        document.getElementById("zona").value = input.zonaPilihan;
+        document.getElementById("luasPersil").value = input.luasPersilPilihan;
+
+        if (input.subZonaPilihan) {
+          if (typeof tampilkanSubZona === "function") {
+            await tampilkanSubZona();
+            setTimeout(() => {
+              const subZonaEl = document.getElementById("subZona");
+              if (subZonaEl) subZonaEl.value = input.subZonaPilihan;
+            }, 500);
+          }
+        }
+
+        document.getElementById("luasPersilInput").value =
+          input.luasPersilInput;
+        document.getElementById("kdbDiusulkan").value = input.kdbDiusulkan;
+        document.getElementById("luasBangunan").value =
+          input.luasBangunanDiusulkan;
+        document.getElementById("luasLantai").value = input.luasLantaiDiusulkan;
+        document.getElementById("ketinggian").value = input.ketinggian;
+        document.getElementById("kdhDiusulkan").value = input.kdhDiusulkan;
+        if (input.gsbDiusulkan)
+          document.getElementById("gsbDiusulkan").value = input.gsbDiusulkan;
+
+        step1Div.style.display = "none";
+        step2Div.style.display = "block";
+        step3Div.style.display = "none";
+        updateStepIndicator(2);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // 5. View Detail Function (FIX SCROLLING)
+      function viewHistoryDetail(index) {
+        const history = JSON.parse(
+          localStorage.getItem("riwayat_kepatuhan") || "[]"
+        );
+        const item = history[index];
+
+        if (!item || !item.resultData) return;
+
+        const res = item.resultData;
+        const modalBody = document.getElementById("historyDetailBody");
+        let htmlContent = "";
+
+        const statusColor =
+          item.status === "Sesuai"
+            ? "text-green-800 bg-green-50"
+            : "text-red-800 bg-red-50";
+        const icon = item.status === "Sesuai" ? "✅" : "❌";
+
+        htmlContent += `
+                <div class="${statusColor} p-4 rounded-lg mb-4 text-center border">
+                    <h2 class="text-2xl font-bold flex items-center justify-center gap-2">
+                        <span>${icon}</span> ${
+          item.status === "Sesuai" ? "PATUH" : "TIDAK PATUH"
+        }
+                    </h2>
+                </div>`;
+
+        htmlContent += '<div class="space-y-2 mb-6">';
+        res.detailPemeriksaan.forEach((det) => {
+          const detIcon = det.status === "pass" ? "✅" : "❌";
+          const detClass =
+            det.status === "pass"
+              ? "text-green-700 bg-green-50"
+              : "text-red-700 bg-red-50";
+          htmlContent += `
+                    <div class="${detClass} p-2 rounded text-sm flex items-start gap-2">
+                        <span class="mt-0.5">${detIcon}</span>
+                        <span>${det.message}</span>
+                    </div>`;
+        });
+        htmlContent += "</div>";
+
+        modalBody.innerHTML = htmlContent;
+
+        const modalDetail = document.getElementById("historyDetailModal");
+        const contentDetail = document.getElementById("detailContent");
+
+        // Tutup list dulu
+        toggleHistory();
+
+        // Buka Detail
+        modalDetail.classList.remove("hidden");
+        setTimeout(() => {
+          modalDetail.classList.remove("opacity-0", "pointer-events-none");
+          contentDetail.classList.remove("scale-95");
+          contentDetail.classList.add("scale-100");
+        }, 10);
+
+        // Kunci scroll body saat detail terbuka
+        document.body.classList.add("overflow-hidden");
+      }
+
+      // 6. Close Detail Function (FIX: JANGAN BUKA LIST LAGI)
+      function closeHistoryDetail() {
+        const modal = document.getElementById("historyDetailModal");
+        const content = document.getElementById("detailContent");
+
+        modal.classList.add("opacity-0", "pointer-events-none");
+        content.classList.remove("scale-100");
+        content.classList.add("scale-95");
+        setTimeout(() => {
+          modal.classList.add("hidden");
+          // HAPUS BARIS INI: toggleHistory();
+          document.body.classList.remove("overflow-hidden"); // Buka kunci scroll
+        }, 300);
+      }
+
+      // 7. Clear All History
+      function clearHistory() {
+        if (confirm("Apakah Anda yakin ingin menghapus semua riwayat?")) {
+          localStorage.removeItem("riwayat_kepatuhan");
+          renderHistory();
+        }
+      }
+
+      // 8. Delete Single Item
+      function deleteHistoryItem(index) {
+        if (confirm("Hapus item riwayat ini?")) {
+          let history = JSON.parse(
+            localStorage.getItem("riwayat_kepatuhan") || "[]"
+          );
+          history.splice(index, 1);
+          localStorage.setItem("riwayat_kepatuhan", JSON.stringify(history));
+          renderHistory();
+        }
+      }
+
+      // --- Navigation Logic ---
+      function updateStepIndicator(currentStep) {
+        [step1Indicator, step2Indicator, step3Indicator].forEach((step) => {
+          const number = step.querySelector(".step-number");
+          const title = step.querySelector("span");
+          number.classList.remove(
+            "active",
+            "completed",
+            "bg-primary",
+            "text-white",
+            "bg-green-500"
+          );
+          number.classList.add("bg-gray-300", "text-gray-600");
+          title.classList.remove("text-gray-700", "font-semibold");
+          title.classList.add("text-gray-500");
+        });
+
+        step1Indicator.querySelector("span").textContent = "Data Lokasi";
+        step3Indicator.querySelector("span").textContent =
+          "Hasil & Data Pemohon";
+
+        progress12.style.width = "0%";
+        progress23.style.width = "0%";
+
+        for (let i = 1; i <= currentStep; i++) {
+          const indicator = document.getElementById(`step-${i}-indicator`);
+          const number = indicator.querySelector(".step-number");
+          const title = indicator.querySelector("span");
+
+          number.classList.remove("bg-gray-300", "text-gray-600");
+          if (i < currentStep) {
+            number.classList.add("completed", "bg-green-500", "text-white");
+          } else if (i === currentStep) {
+            number.classList.add("active", "text-white");
+          }
+
+          title.classList.remove("text-gray-500");
+          title.classList.add("text-gray-700", "font-semibold");
+        }
+
+        if (currentStep >= 2) {
+          setTimeout(() => (progress12.style.width = "100%"), 100);
+        }
+        if (currentStep >= 3) {
+          setTimeout(() => (progress23.style.width = "100%"), 100);
+        }
+      }
+
+      function validateStepInputs(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return { isValid: true };
+        const inputs = container.querySelectorAll(
+          `input[required], select[required]`
+        );
+        let isValid = true;
+        let firstInvalidElement = null;
+        inputs.forEach((input) => {
+          if (!input.checkValidity()) {
+            isValid = false;
+            if (!firstInvalidElement) firstInvalidElement = input;
+          }
+        });
+        return { isValid, firstInvalidElement };
+      }
+
+      nextStep1Button.addEventListener("click", () => {
+        const step1Validation = validateStepInputs("step-1");
+        if (!step1Validation.isValid) {
+          if (step1Validation.firstInvalidElement)
+            step1Validation.firstInvalidElement.reportValidity();
+          alert("Harap lengkapi semua Informasi Lokasi & Zonasi.");
+          return;
+        }
+
+        // Check authentication
+        const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+        console.log("Authentication status:", isAuthenticated);
+
+        if (!isAuthenticated || isAuthenticated !== "true") {
+          // Save form data before redirecting
+          const formData = {
+            swp: document.getElementById("swp").value,
+            zona: document.getElementById("zona").value,
+            luasPersil: document.getElementById("luasPersil").value,
+            subZona: document.getElementById("subZona").value,
+          };
+          sessionStorage.setItem(
+            "kepatuhanFormStep1",
+            JSON.stringify(formData)
+          );
+
+          console.log("Redirecting to login...");
+          // Redirect to login
+          window.location.href = "login.html";
+          return;
+        }
+
+        step1Div.style.display = "none";
+        step2Div.style.display = "block";
+        updateStepIndicator(2);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        feather.replace();
+      });
+
+      prevStep2Button.addEventListener("click", () => {
+        step2Div.style.display = "none";
+        step1Div.style.display = "block";
+        updateStepIndicator(1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      if (prevStep3Button) {
+        prevStep3Button.addEventListener("click", () => {
+          step3Div.style.display = "none";
+          dataPemohonDiv.style.display = "none";
+          step2Div.style.display = "block";
+          updateStepIndicator(2);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          feather.replace();
+        });
+      }
+
+      window.showStep3 = function () {
+        dataPemohonDiv.style.display = "block";
+        step1Div.style.display = "none";
+        step2Div.style.display = "none";
+        step3Div.style.display = "block";
+        updateStepIndicator(3);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        feather.replace();
+      };
+
+      resetButton.addEventListener("click", () => {
+        document.getElementById("formKepatuhan").reset();
+        if (typeof updateZonaOptions === "function") {
+          updateZonaOptions();
+        } else {
+          document.getElementById("zona").innerHTML =
+            '<option value="">-- Pilih SWP Dahulu --</option>';
+          document.getElementById("zona").disabled = true;
+          document.getElementById("subZonaContainer").style.display = "none";
+        }
+        document.getElementById("hasil").innerHTML =
+          '<div class="text-center py-12 text-gray-500"><i data-feather="file-text" class="w-16 h-16 mx-auto mb-3 text-gray-400"></i><p>Hasil akan ditampilkan di sini...</p></div>';
+
+        step3Div.style.display = "none";
+        step2Div.style.display = "none";
+        dataPemohonDiv.style.display = "none";
+        step1Div.style.display = "block";
+        updateStepIndicator(1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        feather.replace();
+      });
+
+      const menuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+      if (menuButton && mobileMenu) {
+        menuButton.addEventListener("click", () => {
+          mobileMenu.classList.toggle("hidden");
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        if (typeof updateZonaOptions === "function") {
+          updateZonaOptions();
+        }
+        updateStepIndicator(1);
+        dataPemohonDiv.style.display = "none";
+        step1Div.style.display = "block";
+        step2Div.style.display = "none";
+        step3Div.style.display = "none";
+        feather.replace();
+
+        // --- TAMBAHAN LOGIKA HITUNG OTOMATIS (AUTO-CALC) ---
+        const inputLuasPersil = document.getElementById("luasPersilInput");
+        const inputKDB = document.getElementById("kdbDiusulkan");
+        const inputLuasBangunan = document.getElementById("luasBangunan");
+
+        if (inputLuasPersil && inputKDB && inputLuasBangunan) {
+          // 1. Input KDB -> Hitung Luas Bangunan
+          inputKDB.addEventListener("input", function () {
+            const luas = parseFloat(inputLuasPersil.value) || 0;
+            const kdb = parseFloat(this.value) || 0;
+            if (luas > 0) {
+              const hasil = (kdb / 100) * luas;
+              inputLuasBangunan.value = parseFloat(hasil.toFixed(2));
+            }
+          });
+
+          // 2. Input Luas Bangunan -> Hitung KDB
+          inputLuasBangunan.addEventListener("input", function () {
+            const luas = parseFloat(inputLuasPersil.value) || 0;
+            const bangunan = parseFloat(this.value) || 0;
+            if (luas > 0) {
+              const hasil = (bangunan / luas) * 100;
+              inputKDB.value = parseFloat(hasil.toFixed(2));
+            }
+          });
+
+          // 3. Update saat Luas Persil berubah
+          // Jika KDB sudah ada, update Luas Bangunan (Pertahankan Rasio)
+          inputLuasPersil.addEventListener("input", function () {
+            const luas = parseFloat(this.value) || 0;
+            const kdb = parseFloat(inputKDB.value) || 0;
+            if (luas > 0 && kdb > 0) {
+              const hasil = (kdb / 100) * luas;
+              inputLuasBangunan.value = parseFloat(hasil.toFixed(2));
+            }
+          });
+        }
+      });
+    </script>
+
+    <script src="script.js"></script>
+  </body>
+</html>

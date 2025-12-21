@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bantuan & Panduan | RuangSesuaiku</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af', 
+                        secondary: '#1e3a8a',
+                        'light-blue': '#bfdbfe',
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
+
+    <nav class="bg-primary shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-white text-xl md:text-2xl font-bold flex items-center gap-2">
+                <i data-feather="home"></i> RuangSesuaiku
+            </a>
+            
+            <div class="hidden md:flex space-x-1">
+                <a href="kepatuhan.html" class="px-3 py-2 text-white hover:text-light-blue transition text-sm font-medium">Cek Kepatuhan</a>
+                <a href="kalkulator.html" class="px-3 py-2 text-white hover:text-light-blue transition text-sm font-medium">Kalkulator</a>
+                <a href="regulasi.html" class="px-3 py-2 text-white hover:text-light-blue transition text-sm font-medium">Regulasi</a>
+                <a href="bantuan.html" class="px-3 py-2 bg-white/10 rounded-md text-white font-bold text-sm transition">Bantuan</a>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden text-white p-1"><i data-feather="menu"></i></button>
+        </div>
+        
+        <div id="mobile-menu" class="hidden md:hidden bg-secondary px-4 pb-4">
+            <a href="http://localhost/tugas3pakjum/Index.php" target="_blank" class="block py-2 text-white/80 hover:text-white border-b border-white/10">Data KKPR</a>
+            <a href="kepatuhan.html" class="block py-2 text-white/80 hover:text-white border-b border-white/10">Cek Kepatuhan</a>
+            <a href="kalkulator.html" class="block py-2 text-white/80 hover:text-white border-b border-white/10">Kalkulator</a>
+            <a href="regulasi.html" class="block py-2 text-white/80 hover:text-white border-b border-white/10">Regulasi</a>
+            <a href="bantuan.html" class="block py-2 text-white font-bold border-b border-white/10">Bantuan</a>
+            <a href="tentang.html" class="block py-2 text-white/80 hover:text-white">Tentang Kami</a>
+        </div>
+    </nav>
+
+    <div class="bg-gradient-to-b from-primary to-blue-800 text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Pusat Bantuan</h1>
+            <p class="text-blue-100 text-sm md:text-base">Panduan penggunaan sistem RuangSesuaiku dan pertanyaan umum.</p>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-4 -mt-8 mb-12 flex-grow max-w-5xl">
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            
+            <div class="md:col-span-1">
+                <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 sticky top-24">
+                    <h3 class="font-bold text-gray-800 mb-4 px-2">Daftar Isi</h3>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#cara-cek" class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-primary transition">Cara Cek Kepatuhan</a></li>
+                        <li><a href="#cara-hitung" class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-primary transition">Cara Menggunakan Kalkulator</a></li>
+                        <li><a href="#dokumen" class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-primary transition">Tentang Dokumen PMP/KKPR</a></li>
+                        <li><a href="#faq" class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-primary transition">Pertanyaan Umum (FAQ)</a></li>
+                        <li><a href="#kontak" class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-primary transition">Hubungi Dukungan</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 space-y-8">
+                
+                <section id="cara-cek" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 scroll-mt-24">
+                    <div class="flex items-center gap-3 mb-4 border-b border-gray-100 pb-2">
+                        <span class="bg-blue-100 text-primary p-2 rounded-lg"><i data-feather="check-square"></i></span>
+                        <h2 class="text-xl font-bold text-gray-800">Cara Cek Kepatuhan</h2>
+                    </div>
+                    <ol class="list-decimal list-inside space-y-3 text-gray-600 text-sm">
+                        <li>Buka halaman <b>"Cek Kepatuhan"</b> melalui menu navigasi.</li>
+                        <li>Pada <b>Step 1 (Data Lokasi)</b>, pilih Sub Wilayah Perencanaan (SWP) sesuai lokasi tanah Anda.</li>
+                        <li>Pilih <b>Zona Peruntukan</b> dan <b>Sub-Zona Spesifik</b> yang muncul otomatis.</li>
+                        <li>Tentukan <b>Kategori Luas Persil</b> tanah Anda.</li>
+                        <li>Klik tombol "Selanjutnya" untuk masuk ke <b>Step 2 (Data Teknis)</b>.</li>
+                        <li>Masukkan detail bangunan seperti Luas Persil (m²), KDB (%), dll.</li>
+                        <li>Klik <b>"Periksa Kepatuhan"</b> untuk melihat hasilnya.</li>
+                        <li>Di <b>Step 3</b>, Anda akan melihat status "Patuh" atau "Tidak Patuh". Isi data pemohon jika ingin mencetak laporan.</li>
+                    </ol>
+                </section>
+
+                <section id="cara-hitung" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 scroll-mt-24">
+                    <div class="flex items-center gap-3 mb-4 border-b border-gray-100 pb-2">
+                        <span class="bg-green-100 text-green-600 p-2 rounded-lg"><i data-feather="calculator"></i></span>
+                        <h2 class="text-xl font-bold text-gray-800">Cara Menggunakan Kalkulator</h2>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Kalkulator ini membantu Anda menghitung koefisien secara detail, terutama jika bangunan Anda memiliki bentuk yang tidak beraturan.</p>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li class="flex gap-3">
+                            <i data-feather="grid" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                            <div>
+                                <strong>Fitur Bantu Hitung:</strong> Klik tombol hijau "Hitung" di samping input. Anda bisa menambahkan potongan luas (Persegi, Trapesium, Segitiga) dan sistem akan menjumlahkannya otomatis.
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i data-feather="download" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                            <div>
+                                <strong>Cek Aturan:</strong> Pilih lokasi di bagian atas, lalu klik "Cek & Terapkan Aturan" agar hasil perhitungan langsung dibandingkan dengan standar RDTR.
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+                <section id="dokumen" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 scroll-mt-24">
+                    <div class="flex items-center gap-3 mb-4 border-b border-gray-100 pb-2">
+                        <span class="bg-yellow-100 text-yellow-600 p-2 rounded-lg"><i data-feather="file-text"></i></span>
+                        <h2 class="text-xl font-bold text-gray-800">Tentang Dokumen PMP & KKPR</h2>
+                    </div>
+                    <div class="space-y-4 text-sm text-gray-600">
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <strong class="text-gray-800 block mb-1">PMP (Pernyataan Mandiri Pelaku UMK)</strong>
+                            Dokumen yang menyatakan bahwa rencana tata ruang yang diajukan oleh pelaku usaha mikro/kecil telah sesuai dengan aturan.
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <strong class="text-gray-800 block mb-1">KKPR (Informasi Kesesuaian Kegiatan Pemanfaatan Ruang)</strong>
+                            Dokumen yang memuat informasi detail mengenai kesesuaian antara rencana kegiatan dengan Rencana Detail Tata Ruang (RDTR).
+                        </div>
+                        <p class="text-xs text-gray-500">*Kedua dokumen ini dapat diunduh di Step 3 halaman Cek Kepatuhan setelah Anda mengisi Data Pemohon.</p>
+                    </div>
+                </section>
+
+                <section id="faq" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 scroll-mt-24">
+                    <div class="flex items-center gap-3 mb-4 border-b border-gray-100 pb-2">
+                        <span class="bg-purple-100 text-purple-600 p-2 rounded-lg"><i data-feather="help-circle"></i></span>
+                        <h2 class="text-xl font-bold text-gray-800">Pertanyaan Umum (FAQ)</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <details class="group">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-800 bg-gray-50 p-3 rounded-lg">
+                                <span>Apa itu KDB, KLB, dan KDH?</span>
+                                <span class="transition group-open:rotate-180"><i data-feather="chevron-down"></i></span>
+                            </summary>
+                            <div class="text-gray-600 text-sm mt-3 px-3 group-open:animate-fadeIn">
+                                <ul class="list-disc list-inside">
+                                    <li><b>KDB (Koefisien Dasar Bangunan):</b> Luas lantai dasar bangunan dibagi luas tanah.</li>
+                                    <li><b>KLB (Koefisien Lantai Bangunan):</b> Total luas seluruh lantai dibagi luas tanah.</li>
+                                    <li><b>KDH (Koefisien Dasar Hijau):</b> Luas area terbuka hijau (taman) dibagi luas tanah.</li>
+                                </ul>
+                            </div>
+                        </details>
+                        
+                        <details class="group">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-800 bg-gray-50 p-3 rounded-lg">
+                                <span>Kenapa hasil saya "Tidak Patuh"?</span>
+                                <span class="transition group-open:rotate-180"><i data-feather="chevron-down"></i></span>
+                            </summary>
+                            <div class="text-gray-600 text-sm mt-3 px-3 group-open:animate-fadeIn">
+                                Artinya nilai yang Anda usulkan melebihi batas maksimum (untuk KDB/KLB/Tinggi) atau kurang dari batas minimum (untuk KDH) yang ditetapkan dalam Perwal No. 118 Tahun 2021 untuk zona lokasi Anda. Silakan sesuaikan desain bangunan Anda.
+                            </div>
+                        </details>
+
+                         <details class="group">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-800 bg-gray-50 p-3 rounded-lg">
+                                <span>Apakah hasil ini bisa dipakai untuk Izin Bangunan (PBG)?</span>
+                                <span class="transition group-open:rotate-180"><i data-feather="chevron-down"></i></span>
+                            </summary>
+                            <div class="text-gray-600 text-sm mt-3 px-3 group-open:animate-fadeIn">
+                                Hasil dari sistem ini adalah <b>simulasi rekomendasi</b>. Untuk pengajuan resmi Persetujuan Bangunan Gedung (PBG), Anda tetap harus melalui proses verifikasi formal di Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu (DPMPTSP).
+                            </div>
+                        </details>
+                    </div>
+                </section>
+
+                 <section id="kontak" class="bg-blue-50 rounded-xl border border-blue-100 p-6 text-center scroll-mt-24">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Masih butuh bantuan?</h3>
+                    <p class="text-sm text-gray-600 mb-4">Tim Dalwas siap membantu Anda.</p>
+                   <a href="https://wa.me/6285601174240" target="_blank" class="inline-flex items-center justify-center px-8 py-3 bg-green-600 text-white rounded-full font-bold text-lg hover:bg-green-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <i data-feather="message-circle" class="w-6 h-6 mr-2"></i> Hubungi via WhatsApp
+                </a>
+                <p class="text-xs text-gray-400 mt-3">Klik untuk chat langsung dengan admin (08:00 - 16:00 WIB)</p>
+                </div>
+
+                    
+                    
+                </section>
+                
+
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2025 Bidang Pengendalian dan Pengawasan Tata Ruang Kota Yogyakarta.</p>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+
+</body>
+</html>
