@@ -1,6 +1,6 @@
 // Alamat server backend Flask kita
-const API_URL = "http://127.0.0.1:5000/api/cek_kepatuhan";
-const EXPORT_API_URL = "http://127.0.0.1:5000/api/export_word";
+const API_URL = "/api/cek_kepatuhan";
+const EXPORT_API_URL = "/api/export_word";
 
 // Opsi Zona
 const ZONA_OPTIONS = {
@@ -56,7 +56,7 @@ async function tampilkanSubZona() {
         return;
     }
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/get_subzonas?swp=${swp}&zona=${zona}`);
+        const response = await fetch(`/api/get_subzonas?swp=${swp}&zona=${zona}`);
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Gagal mengambil data sub-zona');
@@ -86,7 +86,7 @@ async function tampilkanSubZona() {
         }
     } catch (error) {
         console.error("Error fetching sub-zona:", error);
-        alert(`Gagal mengambil daftar sub-zona: ${error.message}. Pastikan server app.py berjalan.`);
+        alert(`Gagal mengambil daftar sub-zona: ${error.message}. Pastikan server berjalan dengan baik.`);
         subZonaSelect.innerHTML = '<option value="">-- Error --</option>';
     }
 }
